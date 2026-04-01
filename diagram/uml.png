@@ -1,0 +1,69 @@
+%% PawPal+ class diagram (Mermaid)
+classDiagram
+    class User {
+        +String name
+        +dict ownerPreferences
+        +int timeAvailable
+        +List~Pet~ pets
+        +enter_info()
+        +add_pet(Pet pet)
+        +edit_pet(int pet_id, Pet updates)
+        +remove_pet(int pet_id)
+        +generate_schedule_for_pet(int pet_id) List~Task~
+    }
+    class Scheduler {
+        +Pet? pet
+        +dict user_prefs
+        +dict constraints
+        +dict algorithm_params
+        -_score_cache: dict
+        +score_task(Task task) float
+        +sort_by_time(List~Task~ tasks) List~Task~
+        +prioritize_tasks() List~Task~
+        +generate_schedule(int timeAvailable) List~ScheduledItem~
+        +mark_task_complete(int task_id, date? done_date) Task?
+        +explain_reasoning(List~ScheduledItem~ schedule) String
+        +same_schedule(ScheduledItem a, ScheduledItem b) bool
+    }
+
+    class Task {
+        +int id
+        +String name
+        +String category
+        +int duration_minutes
+        +int priority
+        +String recurrence
+        +date last_done
+        +String notes
+        +bool completed
+        +is_due() bool
+        +to_dict() dict
+        +mark_complete(date? done_date)
+    }
+    class Pet {
+        +int id
+        +String name
+        +String species
+        +int age_years
+        +List~String~ preferences
+        +List~Task~ tasks
+        +add_task(Task task)
+        +edit_task(int task_id, Task updates)
+        +remove_task(int task_id)
+        +list_tasks() List~Task~
+    }
+
+    class ScheduledItem {
+        +Task task
+        +int start_minute
+        +int end_minute
+    }
+
+
+    User "1" --> "*" Pet : owns
+    Pet "1" --> "*" Task : has
+    User ..> Scheduler : delegates generate_schedule_for_pet
+    Scheduler "1" --> "0..1" Pet : holds/uses
+    Scheduler "1" o-- "0..*" ScheduledItem : produces
+    ScheduledItem --> Task : references
+    
